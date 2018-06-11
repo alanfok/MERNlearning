@@ -5,7 +5,7 @@ const User = require('../../models/User');
 const bcrypt =require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys =require('../../config/keys');
-
+const passport =require('passport');
 
 
 //@router   Get api/users/test
@@ -77,8 +77,9 @@ router.post('/login', (req, res) =>{
 
                     //Sign Token
                     jwt.sign(payload,
-                        keys.secretOrKey,
-                        {expiresIn: 3600 },(err, token)=>{
+                        keys.secretOrKey,// save in config
+                        {expiresIn: 3600 }, // expired time
+                        (err, token)=>{
                         res.json({
                             success: true,
                             token: 'Bearer ' + token
@@ -99,7 +100,18 @@ router.post('/login', (req, res) =>{
 
 
 
+//@router   Get api/users/current
+//@desc     Return current route
+//@access   Private
 
+
+router.get(
+    '/current',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        res.json(req.user);//return the object
+    }
+);
 
 
 
